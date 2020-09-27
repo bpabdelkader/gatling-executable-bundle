@@ -1,5 +1,5 @@
 
-= Gatling Tests as an Executable Bundle image:https://travis-ci.org/bpabdelkader/gatling-executable-bundle.svg?branch=master["Build Status", link="https://travis-ci.org/bpabdelkader/gatling-executable-bundle"] image:https://sonarcloud.io/api/project_badges/measure?project=bpabdelkader_gatling-executable-bundle&metric=alert_status["Quality Gate Status", link="https://sonarcloud.io/dashboard?id=bpabdelkader_gatling-executable-bundle"] image:https://jitpack.io/v/bpabdelkader/gatling-executable-bundle.svg["JitPack", link="https://jitpack.io/#bpabdelkader/gatling-executable-bundle"]
+= Gatling Tests as an Executable Bundle image:https://travis-ci.com/bpabdelkader/gatling-executable-bundle.svg?branch=master["Build Status", link="https://travis-ci.org/bpabdelkader/gatling-executable-bundle"] image:https://sonarcloud.io/api/project_badges/measure?project=bpabdelkader_gatling-executable-bundle&metric=alert_status["Quality Gate Status", link="https://sonarcloud.io/dashboard?id=bpabdelkader_gatling-executable-bundle"]
 
 == Introduction
 ==== There are several ways to run a simulation with Gatling:
