@@ -1,0 +1,197 @@
+
+= Gatling Tests as an Executable Bundle image:https://travis-ci.org/bpabdelkader/gatling-executable-bundle.svg?branch=master["Build Status", link="https://travis-ci.org/bpabdelkader/gatling-executable-bundle"] image:https://sonarcloud.io/api/project_badges/measure?project=bpabdelkader_gatling-executable-bundle&metric=alert_status["Quality Gate Status", link="https://sonarcloud.io/dashboard?id=bpabdelkader_gatling-executable-bundle"] image:https://jitpack.io/v/bpabdelkader/gatling-executable-bundle.svg["JitPack", link="https://jitpack.io/#bpabdelkader/gatling-executable-bundle"]
+
+== Introduction
+==== There are several ways to run a simulation with Gatling:
+
+1. Using `gatling-highcharts` bundle: simulation classes are compiled and ran using the `bin/gatling.sh` script.
+Plugins and dependency jars could be droped easily into lib directory, but should be chosen carefully to avoid compatibility issues.
+
+2. Using the `gatling-maven-plugin`: this means `maven` should be installed on the controller !!
+
+3. Using IDE: run the `Engine.class` inside  `gatling-highcharts-maven-archetype` project.
+
+This project intends to create an executable JAR with all the dependencies bundled together:
+
+- Gatling
+- Plugins (kafka, Rabbitmq, etc...)
+- simulation files
+- configuration
+
+This JAR could be run from any platform using a shell script.
+
+== Prerequisites
+```xml
+<dependencies>
+  <dependency>
+    <groupId>org.scala-lang</groupId>
+    <artifactId>scala-compiler</artifactId>
+    <version>${scala.version}</version>
+    <scope>compile</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.scalatest</groupId>
+    <artifactId>scalatest_2.12</artifactId>
+    <version>${scalatest.version}</version>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>io.gatling.highcharts</groupId>
+    <artifactId>gatling-charts-highcharts</artifactId>
+    <version>${gatling.version}</version>
+  </dependency>
+</dependencies>
+```
+
+== Project
+The project consists of one simulation package. Resources contain Gatling and simulation config .
+
+
+=== BasicSiumuation
+Simulation class should be declared in `gatling-maven-plugin`
+```xml
+<plugin>
+  <groupId>io.gatling</groupId>
+  <artifactId>gatling-maven-plugin</artifactId>
+  <version>${gatling.maven.plugin}</version>
+  <configuration>
+    <configFolder>src/main/resources</configFolder>
+    <simulationsFolder>src/main/scala/com/ngenia/gatling/simulations</simulationsFolder>
+  </configuration>
+  <executions>
+    <execution>
+      <id>BasicSimulation</id>
+      <goals>
+        <goal>test</goal>
+      </goals>
+      <phase>compile</phase>
+      <configuration>
+        <simulationClass>com.ngenia.gatling.simulations.BasicSimulation</simulationClass>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
+```
+
+For test purpose, the BasicSimulation consists of one http request:
+```ruby
+package com.ngenia.gatling.simulations
+
+import com.typesafe.config.ConfigFactory
+import io.gatling.core.Predef._
+import io.gatling.http.Predef._
+
+class BasicSimulation extends Simulation {
+
+  // Load Simulation Config
+  val config = ConfigFactory.load("simulation/simulation.conf")
+
+  val scenarioName = config.getString("scenario.name")
+  val baseUrl = config.getString("scenario.baseUrl")
+  val vuserCount = config.getInt("scenario.vusers.count")
+
+  val httpProtocol = http
+    .baseUrl(baseUrl)
+
+  val scn = scenario(scenarioName)
+    .exec(
+      http("request")
+        .get("/")
+    )
+
+  setUp(
+    scn
+      .inject(
+        atOnceUsers(vuserCount)
+      ).protocols(httpProtocol)
+  )
+}
+```
+
+simulation config file looks like:
+```ruby
+# HTTP Scenario
+scenario {
+  name : "http Request"
+  baseUrl : "http://computer-database.gatling.io"
+  vusers {
+    count : 1
+  }
+}
+```
+===  Bundle details
+Running the `mvn clean install` command compiles the the project and use `maven-assembly-plugin` to generate a zip distribution bundling:
+
+- shaded JAR with Gatling, scala support and the needed dependencies to run the simulations(thanks to the maven-shade-plugin).
+- `conf` directory for Gatling configuration and logging appenders
+- `simulations` configurations
+- shell script to run the gatling scenario
+
+```ruby
+dist
+    |_ gatling-executable-1.0.0
+	|_ lib
+            |_ gatling-executable-1.0.0.jar
+        |_ conf
+            |_ gatling.conf
+            |_ logback.xml
+        |_ simulations
+            |_ BasicSimulation.conf
+        |_ launch.sh
+```
+
+== Run script
+`launch.sh` could be modified to add JAVA and Simulation options.
+
+```ruby
+bpabdelkader@MINGW64 /d/Work/Dev/gatling-executable-bundle/dist/gatling-executable-bundle-1.0.0 (master)
+
+$ ./launch.sh
+/c/Program Files (x86)/Common Files/Oracle/Java/javapath/java
+java found in PATH
+Executing ./lib/gatling-executable-1.0.0.jar ...
+Simulation com.ngenia.gatling.simulations.BasicSimulation started...
+
+================================================================================
+2020-09-27 14:28:56                                           0s elapsed
+---- Requests ------------------------------------------------------------------
+> Global                                                   (OK=2      KO=0     )
+> request                                                  (OK=1      KO=0     )
+> request Redirect 1                                       (OK=1      KO=0     )
+
+---- http Request --------------------------------------------------------------
+[##########################################################################]100%
+          waiting: 0      / active: 0      / done: 1
+================================================================================
+
+Simulation com.ngenia.gatling.simulations.BasicSimulation completed in 0 seconds
+Parsing log file(s)...
+Parsing log file(s) done
+Generating reports...
+
+================================================================================
+---- Global Information --------------------------------------------------------
+> request count                                          2 (OK=2      KO=0     )
+> min response time                                     29 (OK=29     KO=-     )
+> max response time                                     35 (OK=35     KO=-     )
+> mean response time                                    32 (OK=32     KO=-     )
+> std deviation                                          3 (OK=3      KO=-     )
+> response time 50th percentile                         32 (OK=32     KO=-     )
+> response time 75th percentile                         34 (OK=34     KO=-     )
+> response time 95th percentile                         35 (OK=35     KO=-     )
+> response time 99th percentile                         35 (OK=35     KO=-     )
+> mean requests/sec                                      2 (OK=2      KO=-     )
+---- Response Time Distribution ------------------------------------------------
+> t < 800 ms                                             2 (100%)
+> 800 ms < t < 1200 ms                                   0 (  0%)
+> t > 1200 ms                                            0 (  0%)
+> failed                                                 0 (  0%)
+================================================================================
+
+Reports generated in 0s.
+Please open the following file: D:\Work\Dev\gatling-executable\dist\gatling-executable-1.0.0\results\basicsimulation-20200927122854479\index.html
+
+```
+
+== License
+Released under the [LGPL License](https://www.gnu.org/licenses/lgpl-3.0.fr.html).
