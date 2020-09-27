@@ -131,7 +131,7 @@ Running the `mvn clean install` command compiles the the project and use `maven-
 dist
     |_ gatling-executable-bundle-1.0.0
 	|_ lib
-            |_ gatling-executable-1.0.0.jar
+            |_ gatling-executable-bundle-1.0.0.jar
         |_ conf
             |_ gatling.conf
             |_ logback.xml
