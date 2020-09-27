@@ -129,7 +129,7 @@ Running the `mvn clean install` command compiles the the project and use `maven-
 
 ```ruby
 dist
-    |_ gatling-executable-1.0.0
+    |_ gatling-executable-bundle-1.0.0
 	|_ lib
             |_ gatling-executable-1.0.0.jar
         |_ conf
@@ -149,7 +149,7 @@ bpabdelkader@MINGW64 /d/Work/Dev/gatling-executable-bundle/dist/gatling-executab
 $ ./launch.sh
 /c/Program Files (x86)/Common Files/Oracle/Java/javapath/java
 java found in PATH
-Executing ./lib/gatling-executable-1.0.0.jar ...
+Executing ./lib/gatling-executable-bundle-1.0.0.jar ...
 Simulation com.ngenia.gatling.simulations.BasicSimulation started...
 
 ================================================================================
@@ -189,7 +189,7 @@ Generating reports...
 ================================================================================
 
 Reports generated in 0s.
-Please open the following file: D:\Work\Dev\gatling-executable\dist\gatling-executable-1.0.0\results\basicsimulation-20200927122854479\index.html
+Please open the following file: D:\Work\Dev\gatling-executable-bundle\dist\gatling-executable-bundle-1.0.0\results\basicsimulation-20200927122854479\index.html
 
 ```
 
