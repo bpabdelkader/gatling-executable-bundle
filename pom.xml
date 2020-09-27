@@ -5,7 +5,7 @@
     <artifactId>gatling-executable-bundle</artifactId>
     <name>gatling-executable-bundle</name>
     <packaging>jar</packaging>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <description>[Gatling 3.1.3] executable bundle</description>
 
     <developers>
