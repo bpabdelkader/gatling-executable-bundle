@@ -194,4 +194,4 @@ Please open the following file: D:\Work\Dev\gatling-executable\dist\gatling-exec
 ```
 
 == License
-Released under the [LGPL License](https://www.gnu.org/licenses/lgpl-3.0.fr.html)
+Released under the http://www.methods.co.nz/asciidoc/[LGPL License^].
